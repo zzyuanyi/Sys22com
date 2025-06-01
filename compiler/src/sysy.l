@@ -27,12 +27,15 @@ Decimal       [1-9][0-9]*
 Octal         0[0-7]*
 Hexadecimal   0[xX][0-9a-fA-F]+
 
+/* 浮点数*/
+FloatNumber   [-+]?([0-9]*\.?[0-9]+|[0-9]+\.?[0-9]*)([eE][-+]?[0-9]+)?
 %%
 
 {WhiteSpace}    { /* 忽略, 不做任何操作 */ }
 {LineComment}   { /* 忽略, 不做任何操作 */ }
 
 "int"           { return INT; }
+"float"         { return FLOAT; }
 "return"        { return RETURN; }
 
 {Identifier}    { yylval.str_val = new string(yytext); return IDENT; }
@@ -41,6 +44,7 @@ Hexadecimal   0[xX][0-9a-fA-F]+
 {Octal}         { yylval.int_val = strtol(yytext, nullptr, 0); return INT_CONST; }
 {Hexadecimal}   { yylval.int_val = strtol(yytext, nullptr, 0); return INT_CONST; }
 
+{FloatNumber}   { yylval.float_val=strtof(yytext,nullptr); return FLOAT_CONST; }
 .               { return yytext[0]; }
 
 %%
