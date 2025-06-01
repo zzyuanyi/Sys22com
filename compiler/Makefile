@@ -64,8 +64,15 @@ CPPFLAGS = $(INC_FLAGS) -MMD -MP
 
 
 # Main target
-$(BUILD_DIR)/$(TARGET_EXEC): $(FB_SRCS) $(OBJS)
+$(BUILD_DIR)/$(TARGET_EXEC): clean_build $(FB_SRCS) $(OBJS)
 	$(CXX) $(OBJS) $(LDFLAGS) -lpthread -ldl -o $@
+
+.PHONY: clean_build
+clean_build:
+	@if [ -d "$(BUILD_DIR)" ]; then \
+		echo "Cleaning existing build directory..."; \
+		rm -rf $(BUILD_DIR); \
+	fi
 
 # C source
 define c_recipe

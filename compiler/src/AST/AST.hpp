@@ -42,18 +42,14 @@ class BaseAST{
 class CompUnitAST:public BaseAST{
     public:
         std::vector<std::unique_ptr<FuncDefAST>> func_def_vec;
-        void Dump() const override {
-            //std::cout << "CompUnitAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class FuncDefAST:public BaseAST{
     public:
         std::unique_ptr<FuncTypeAST> func_type;
         std::string ident;
         std::vector<std::unique_ptr<BlockAST>> block_vec;
-        void Dump() const override {
-            //std::cout << "FuncDefAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class FuncTypeAST:public BaseAST{
     public:
@@ -62,16 +58,12 @@ class FuncTypeAST:public BaseAST{
             FUNC_TYPE_VOID,
             FUNC_TYPE_FLOAT
         } func_type;
-        void Dump() const override {
-            //std::cout << "FuncTypeAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class BlockAST:public BaseAST{
     public:
         std::vector<std::unique_ptr<BlockItemAST>> block_item_vec;
-        void Dump() const override {
-            //std::cout << "BlockAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class BlockItemAST:public BaseAST{
     public:
@@ -82,9 +74,7 @@ class BlockItemAST:public BaseAST{
         std::unique_ptr<StmtAST> stmt;
         std::unique_ptr<DeclAST> decl;
         BlockItemAST(BlockItemType type):block_item_type(type){}
-        void Dump() const override {
-            //std::cout << "BlockItemAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class StmtAST:public BaseAST{
     public:
@@ -102,16 +92,12 @@ class StmtAST:public BaseAST{
         std::unique_ptr<BlockAST> block;
         std::unique_ptr<LValAST> l_val;
         StmtAST(StmtType type):stmt_type(type){}
-        void Dump() const override {
-            //std::cout << "StmtAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class ExpAST:public BaseAST{
     public:
        std::unique_ptr<LOrExpAST> l_or_exp;
-       void Dump() const override {
-            //std::cout << "ExpAST" << std::endl;
-        }
+       void Dump() const override;
 };
 class LOrExpAST:public BaseAST{
     public:
@@ -126,9 +112,7 @@ class LOrExpAST:public BaseAST{
         std::unique_ptr<LOrExpAST> l_or_exp;
         LOrExpAST(LOrExpType type):l_or_exp_type(type){}
         LOrExpAST(LOrExpType type, Op op):l_or_exp_type(type),op(op){}
-        void Dump() const override {
-            //std::cout << "LOrExpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class LAndExpAST:public BaseAST{
     public:
@@ -143,9 +127,7 @@ class LAndExpAST:public BaseAST{
         std::unique_ptr<LAndExpAST> l_and_exp;
         LAndExpAST(LAndExpType type):l_and_exp_type(type){}
         LAndExpAST(LAndExpType type, Op op):l_and_exp_type(type),op(op){}
-        void Dump() const override {
-            //std::cout << "LAndExpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class EqExpAST:public BaseAST{
     public:
@@ -161,9 +143,7 @@ class EqExpAST:public BaseAST{
         std::unique_ptr<EqExpAST> eq_exp;
         EqExpAST(EqExpType type):eq_exp_type(type){}
         EqExpAST(EqExpType type, Op op):eq_exp_type(type),op(op){}
-        void Dump() const override {
-            //std::cout << "EqExpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class RelExpAST:public BaseAST{
     public:
@@ -181,9 +161,7 @@ class RelExpAST:public BaseAST{
         std::unique_ptr<RelExpAST> rel_exp;
         RelExpAST(RelExpType type):rel_exp_type(type){}
         RelExpAST(RelExpType type, Op op):rel_exp_type(type),op(op){}
-        void Dump() const override {
-            //std::cout << "RelExpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class AddExpAST:public BaseAST{
     public:
@@ -199,9 +177,7 @@ class AddExpAST:public BaseAST{
         std::unique_ptr<AddExpAST> add_exp;
         AddExpAST(AddExpType type):add_exp_type(type){}
         AddExpAST(AddExpType type, Op op):add_exp_type(type),op(op){}
-        void Dump() const override {
-            //std::cout << "AddExpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class MulExpAST:public BaseAST{
     public:
@@ -218,9 +194,7 @@ class MulExpAST:public BaseAST{
         std::unique_ptr<MulExpAST> mul_exp;
         MulExpAST(MulExpType type):mul_exp_type(type){}
         MulExpAST(MulExpType type, Op op):mul_exp_type(type),op(op){}
-        void Dump() const override {
-            //std::cout << "MulExpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class UnaryExpAST:public BaseAST{
     public:
@@ -238,9 +212,7 @@ class UnaryExpAST:public BaseAST{
         std::unique_ptr<UnaryOpAST> unary_op;
         UnaryExpAST(UnaryExpType type):unary_exp_type(type){}
         UnaryExpAST(UnaryExpType type, Op op):unary_exp_type(type),op(op){}
-        void Dump() const override {
-            //std::cout << "UnaryExpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class UnaryOpAST:public BaseAST{
     public:
@@ -250,9 +222,7 @@ class UnaryOpAST:public BaseAST{
             NOT
         } unary_op_type;
         UnaryOpAST(UnaryOpType type):unary_op_type(type){}
-        void Dump() const override {
-            //std::cout << "UnaryOpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class PrimaryExpAST:public BaseAST{
     public:
@@ -265,16 +235,12 @@ class PrimaryExpAST:public BaseAST{
         std::unique_ptr<NumberAST> number;
         std::unique_ptr<ExpAST> exp;
         PrimaryExpAST(PrimaryExpType type):primary_exp_type(type){}
-        void Dump() const override {
-            //std::cout << "PrimaryExpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class NumberAST:public BaseAST{
     public:
         int number;
-        void Dump() const override {
-            //std::cout << "NumberAST" << std::endl;
-        }
+        void Dump() const override;
         NumberAST(){}
         NumberAST(int num):number(num){}
 };
@@ -287,25 +253,19 @@ class DeclAST:public BaseAST{
         std::unique_ptr<ConstDeclAST> const_decl;
         std::unique_ptr<VarDeclAST> var_decl;
         DeclAST(DeclType type):decl_type(type){}
-        void Dump() const override {
-            //std::cout << "DeclAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class ConstDeclAST:public BaseAST{
     public:
         std::unique_ptr<BTypeAST> b_type;
         std::vector<std::unique_ptr<ConstDefAST>> const_def_vec;
-        void Dump() const override {
-            //std::cout << "ConstDeclAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class VarDeclAST:public BaseAST{
     public:
         std::unique_ptr<BTypeAST> b_type;
         std::vector<std::unique_ptr<ConstDefAST>> const_def_vec;
-        void Dump() const override {
-            //std::cout << "VarDeclAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class VarDefAST:public BaseAST{
     public:
@@ -315,16 +275,12 @@ class VarDefAST:public BaseAST{
     } var_def_type;
         std::string ident;
         std::unique_ptr<InitValAST> init_val;
-        void Dump() const override {
-            //std::cout << "VarDefAST" << std::endl;
-        }
+        void Dump() const override;
 };  
 class InitValAST:public BaseAST{
     public:
         std::unique_ptr<ExpAST> exp;
-        void Dump() const override {
-            //std::cout << "InitValAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class BTypeAST:public BaseAST{
     public:
@@ -332,36 +288,26 @@ class BTypeAST:public BaseAST{
             B_TYPE_INT,
             B_TYPE_FLOAT
         } b_type;
-        void Dump() const override {
-            //std::cout << "BTypeAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class ConstDefAST:public BaseAST{
     public:
         std::string ident;
         std::unique_ptr<ConstInitValAST> const_init_val;
-        void Dump() const override {
-            //std::cout << "ConstDefAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class ConstInitValAST:public BaseAST{
     public:
         std::unique_ptr<ConstExpAST> const_exp;
-        void Dump() const override {
-            //std::cout << "ConstInitValAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class ConstExpAST:public BaseAST{
     public:
         std::unique_ptr<ExpAST> exp;
-        void Dump() const override {
-            //std::cout << "ConstExpAST" << std::endl;
-        }
+        void Dump() const override;
 };
 class LValAST:public BaseAST{
     public:
         std::string ident;
-        void Dump() const override {
-            //std::cout << "LValAST" << std::endl;
-        }
+        void Dump() const override;
 };

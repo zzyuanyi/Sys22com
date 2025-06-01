@@ -1,7 +1,9 @@
 %code requires {
   #include <memory>
   #include <string>
+
   #include <sstream>
+
 }
 
 %{
@@ -9,10 +11,11 @@
 #include <iostream>
 #include <memory>
 #include <string>
+
 #include <sstream>
 // 声明 lexer 函数和错误处理函数
 int yylex();
-void yyerror(std::unique_ptr<std::string> &ast, const char *s);
+void yyerror(std::unique_ptr<BaseAST> &ast, const char *s);
 
 using namespace std;
 
@@ -34,7 +37,7 @@ string format_float(float value)
 // 定义 parser 函数和错误处理函数的附加参数
 // 我们需要返回一个字符串作为 AST, 所以我们把附加参数定义成字符串的智能指针
 // 解析完成后, 我们要手动修改这个参数, 把它设置成解析得到的字符串
-%parse-param { std::unique_ptr<std::string> &ast }
+%parse-param { std::unique_ptr<BaseAST> &ast }
 
 // yylval 的定义, 我们把它定义成了一个联合体 (union)
 // 因为 token 的值有的是字符串指针, 有的是整数
@@ -44,6 +47,7 @@ string format_float(float value)
 %union {
   std::string *str_val;
   int int_val;
+
   float float_val;
 }
 
@@ -55,7 +59,7 @@ string format_float(float value)
 %token <float_val> FLOAT_CONST
 
 // 非终结符的类型定义
-%type <str_val> FuncDef FuncType Block Stmt Number
+%type <ast_val> Number Stmt Block FuncType FuncDef
 
 %%
 
@@ -66,7 +70,9 @@ string format_float(float value)
 // $1 指代规则里第一个符号的返回值, 也就是 FuncDef 的返回值
 CompUnit
   : FuncDef {
-    ast = unique_ptr<string>($1);
+      auto comp_unit = std::make_unique<CompUnitAST>();
+      comp_unit->func_def_vec.push_back(std::unique_ptr<FuncDefAST>(static_cast<FuncDefAST*>($1)));
+      ast = std::move(comp_unit);  // ast 类型是 unique_ptr<BaseAST>
   }
   ;
 
@@ -82,17 +88,21 @@ CompUnit
 // 这种写法会省下很多内存管理的负担
 FuncDef
   : FuncType IDENT '(' ')' Block {
-    auto type = unique_ptr<string>($1);
-    auto ident = unique_ptr<string>($2);
-    auto block = unique_ptr<string>($5);
-    $$ = new string(*type + " " + *ident + "() " + *block);
+      auto funcDef = new FuncDefAST();
+      funcDef->func_type.reset(static_cast<FuncTypeAST*>($1));  // 显式转换
+      funcDef->ident = *$2;                                      // 解引用指针
+      funcDef->block_vec.emplace_back(static_cast<BlockAST*>($5));  // 显式转换
+
+      $$ = funcDef;
   }
   ;
 
 // 同上, 不再解释
 FuncType
   : INT {
-    $$ = new string("int");
+      auto funcType = new FuncTypeAST();
+      funcType->func_type = FuncTypeAST::FUNC_TYPE_INT;
+      $$ = funcType;
   }
   | FLOAT{
     $$ = new string("float");
@@ -101,21 +111,26 @@ FuncType
 
 Block
   : '{' Stmt '}' {
-    auto stmt = unique_ptr<string>($2);
-    $$ = new string("{ " + *stmt + " }");
+      auto block = new BlockAST();
+      auto block_item = new BlockItemAST(BlockItemAST::BLOCK_ITEM_STMT);
+      block_item->stmt.reset(static_cast<StmtAST*>($2));
+      block->block_item_vec.emplace_back(block_item);
+      $$ = block;
   }
   ;
 
+
 Stmt
   : RETURN Number ';' {
-    auto number = unique_ptr<string>($2);
-    $$ = new string("return " + *number + ";");
+      auto stmt = new StmtAST(StmtAST::STMT_RETURN);
+      stmt->exp.reset(dynamic_cast<ExpAST*>($2));
+      $$ = stmt;
   }
   ;
 
 Number
   : INT_CONST {
-    $$ = new string(to_string($1));
+      $$ = new NumberAST($1);
   }
   | FLOAT_CONST{
     $$ =new string(format_float($1));
@@ -126,6 +141,6 @@ Number
 
 // 定义错误处理函数, 其中第二个参数是错误信息
 // parser 如果发生错误 (例如输入的程序出现了语法错误), 就会调用这个函数
-void yyerror(unique_ptr<string> &ast, const char *s) {
+void yyerror(unique_ptr<BaseAST> &ast, const char *s) {
   cerr << "error: " << s << endl;
 }
