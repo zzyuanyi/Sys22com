@@ -1,7 +1,9 @@
 %code requires {
   #include <memory>
   #include <string>
-  #include "AST/ast.hpp"
+
+  #include <sstream>
+
 }
 
 %{
@@ -9,14 +11,27 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include "AST/ast.hpp"
 
+#include <sstream>
 // 声明 lexer 函数和错误处理函数
 int yylex();
 void yyerror(std::unique_ptr<BaseAST> &ast, const char *s);
 
 using namespace std;
 
+string format_float(float value)
+{
+  stringstream ss;
+  ss<<value;
+  string s=ss.str();
+  if(s.find('.')!=string::npos){
+    s.erase(s.find_last_not_of('0')+1,string::nops);
+    if(s.back()=='.'){
+      s.pop_back();
+    }
+  }
+  return s;
+}
 %}
 
 // 定义 parser 函数和错误处理函数的附加参数
@@ -32,14 +47,16 @@ using namespace std;
 %union {
   std::string *str_val;
   int int_val;
-  BaseAST *ast_val;
+
+  float float_val;
 }
 
 // lexer 返回的所有 token 种类的声明
 // 注意 IDENT 和 INT_CONST 会返回 token 的值, 分别对应 str_val 和 int_val
-%token INT RETURN
+%token INT FLOAT RETURN
 %token <str_val> IDENT
 %token <int_val> INT_CONST
+%token <float_val> FLOAT_CONST
 
 // 非终结符的类型定义
 %type <ast_val> Number Stmt Block FuncType FuncDef
@@ -87,6 +104,9 @@ FuncType
       funcType->func_type = FuncTypeAST::FUNC_TYPE_INT;
       $$ = funcType;
   }
+  | FLOAT{
+    $$ = new string("float");
+  }
   ;
 
 Block
@@ -111,6 +131,9 @@ Stmt
 Number
   : INT_CONST {
       $$ = new NumberAST($1);
+  }
+  | FLOAT_CONST{
+    $$ =new string(format_float($1));
   }
   ;
 
